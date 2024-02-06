@@ -37,7 +37,7 @@ It prints the type and displays comments showing where holes are."""
             tag = ''
         kind = 'struct' if atype.code == gdb.TYPE_CODE_STRUCT else 'union'
         if nested == False:
-            print ('/* %4d     */ ' % atype.sizeof, end="")
+            print ('/* 0x%04x     */ ' % atype.sizeof, end="")
         print ('%s%s %s {' % ( ' ' * (2 * level), kind, tag))
         endpos = 0
         for field in sorted(atype.fields(), key=lambda field: field.bitpos):
@@ -50,7 +50,7 @@ It prints the type and displays comments showing where holes are."""
             # Detect hole
             if endpos < field.bitpos:
                 hole = field.bitpos - endpos
-                print ('/* XXX %4d */ !!' % (hole // 8), end="")
+                print ('/* XXX 0x%04x */ !!' % (hole // 8), end="")
                 print (' ' * (4 + 2 * level - 2), end="")
                 print ('__%d_bit_padding__' % hole)
 
@@ -63,7 +63,7 @@ It prints the type and displays comments showing where holes are."""
                 else:
                     fieldsize = 8 * ftype.sizeof # will get packing wrong for structs
 
-            print ('/* %3d %4d */ ' % (field.bitpos // 8, fieldsize // 8), end="")
+            print ('/* 0x%04x 0x%04x */ ' % (field.bitpos // 8, fieldsize // 8), end="")
             endpos = field.bitpos + fieldsize
 
             # Walk nested structure or print variable size (this is not a hole)
@@ -75,14 +75,14 @@ It prints the type and displays comments showing where holes are."""
                 print ('%s %s' % (str (ftype), field.name),end="")
                 # Append bitfield size if non-standard
                 if fieldsize != ftype.sizeof * 8:
-                    print (':%d' % fieldsize)
+                    print (':%x' % fieldsize)
                 else:
                     print ('')
 
         # Check for padding at the end
         if endpos // 8 < atype.sizeof:
             hole = 8 * atype.sizeof - endpos
-            print ('/* XXX %4d */ !!' % (hole // 8), end="")
+            print ('/* XXX 0x%04x */ !!' % (hole // 8), end="")
             print (' ' * (4 + 2 * level - 2), end="")
             print ('__%d_bit_padding__' % hole)
 
