@@ -40,7 +40,7 @@ It prints the type and displays comments showing where holes are."""
             print ('/* %4d     */ ' % atype.sizeof, end="")
         print ('%s%s %s {' % ( ' ' * (2 * level), kind, tag))
         endpos = 0
-        for field in atype.fields():
+        for field in sorted(atype.fields(), key=lambda field: field.bitpos):
             # Skip static fields
             if not hasattr (field, ('bitpos')):
                 continue
